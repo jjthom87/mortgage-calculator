@@ -18,9 +18,8 @@
           <input type="submit"value="Calculate">
         </form>
       </div>
-      <div class="table-div">
-
-      </div>
+      <div class="payment-div"></div>
+      <div class="table-div"></div>
     </div>
   </body>
   <script type="text/javascript">
@@ -40,6 +39,9 @@
     const calculateAmortization = (loanAmount, interestRate, extraYearlyPayment) => {
       const interestPercentage = interestRate/100;
       const monthlyPayment = totalMortgagePayment(loanAmount, interestRate);
+
+      document.querySelector(".payment-div").innerHTML = "<p>Payment: "+ monthlyPayment +"</p>"
+
       let principalBalance = loanAmount
       let paymentNumber = 0;
       let months = 360;
@@ -55,8 +57,10 @@
           principalBalance = principalBalance - interest;
         }
         paymentNumber++;
+        let interestPayment = monthlyPayment - interest;
+        let amortization = monthlyPayment - (monthlyPayment - interest);
         principalBalance = principalBalance < 0 ? 0 : principalBalance;
-        tableHTML += "<tr><td>" + paymentNumber + "</td><td>" + principalBalance + "</td></tr>"
+        tableHTML += "<tr><td>" + paymentNumber + "</td><td>" + principalBalance + "</td><td>"+interestPayment+"</td><td>"+amortization+"</td></tr>"
       }
 
       return tableHTML;
@@ -67,11 +71,18 @@
       document.querySelector(".table-div").innerHTML = "";
 
       let tableHTML = "";
-      tableHTML += "<table><tr><th>Payment #</th><th>Principal Balance</th><tr>";
+      tableHTML += "<table><tr><th>Payment #</th><th>Principal Balance</th><th>Interest</th><th>Amortization</th><tr>";
       tableHTML += calculateAmortization(document.querySelector("#loanAmount").value, document.querySelector("#interestRate").value, document.querySelector("#extraPayment").checked)
       tableHTML += "</table>";
 
       document.querySelector(".table-div").innerHTML = tableHTML;
     });
+    //https://www.fool.com/the-ascent/personal-finance/how-is-loan-amortization-schedule-calculated/
+    //https://www.bankrate.com/mortgages/prepaying-your-mortgage/
   </script>
+  <style media="screen">
+    table, tr, th, td {
+      border: 2px solid black;
+    }
+  </style>
 </html>
