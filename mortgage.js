@@ -1,47 +1,60 @@
-//https://www.fool.com/the-ascent/personal-finance/how-is-loan-amortization-schedule-calculated/
-//https://www.bankrate.com/mortgages/prepaying-your-mortgage/
+let months = [
+  "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+]
+let month;
+let monthNumber;
 
-const totalMortgagePayment = (loanAmount, interestRate) => {
-    let lengthOfMortgageInYears = 30;
-    let yearlyPayments = 12;
-    let lengthOfMortgageInMonths = lengthOfMortgageInYears * yearlyPayments
-    const interestPercentage = interestRate/100;
-    const monthlyInterestRate = interestPercentage/12;
-    let monthlyRate = Math.pow((1+monthlyInterestRate), lengthOfMortgageInMonths);
-    monthlyRate = (monthlyInterestRate * (monthlyRate))/(monthlyRate-1);
-    const monthlyPayment = loanAmount * monthlyRate;
-
-    // console.log("total interest payments: " + ((monthlyPayment * lengthOfMortgageInMonths) - loanAmount));
-    // console.log("monthly payment: " + monthlyPayment);
-
-    return monthlyPayment;
+let extraMonth = "October";
+switch(extraMonth){
+  case "January":
+    month = "January";
+    monthNumber = 0;
+    break;
+  case "February":
+    month = "February";
+    monthNumber = 1;
+    break;
+  case "March":
+    month = "March";
+    monthNumber = 2;
+    break;
+  case "April":
+    month = "April";
+    monthNumber = 3;
+    break;
+  case "May":
+    month = "May";
+    monthNumber = 4;
+    break;
+  case "June":
+    month = "June";
+    monthNumber = 5;
+    break;
+  case "July":
+    month = "July";
+    monthNumber = 6;
+    break;
+  case "August":
+    month = "August";
+    monthNumber = 7;
+    break;
+  case "September":
+    month = "September";
+    monthNumber = 8;
+    break;
+  case "October":
+    month = "October"
+    monthNumber = 9;
+    break;
+  case "November":
+    month = "November";
+    monthNumber = 10;
+    break;
+  case "December":
+    month = "December";
+    monthNumber = 11;
+    break;
 }
 
-const calculateAmortization = (loanAmount, interestRate, extraYearlyPayment) => {
-  const interestPercentage = interestRate/100;
-  const monthlyPayment = totalMortgagePayment(loanAmount, interestRate);
-  let principalBalance = loanAmount
-  let paymentNumber = 0;
-  let months = 360;
-
-  while(principalBalance > 0){
-    let interest = monthlyPayment - (principalBalance * interestPercentage)/12;
-    // console.log("interestPayment: " + (monthlyPayment - interest))
-    // console.log("amortization: " + (monthlyPayment - (monthlyPayment - interest)));
-    months--;
-    if(extraYearlyPayment && months % 12 == 0){
-      principalBalance = principalBalance - interest;
-      principalBalance = principalBalance - monthlyPayment;
-    } else {
-      principalBalance = principalBalance - interest;
-    }
-    paymentNumber++;
-    principalBalance = principalBalance < 0 ? 0 : principalBalance;
-    console.log("principalBalance: " + principalBalance);
-  }
-
-  return n;
-}
-
-// console.log(calculateAmortization(120000, 4.5));
-// console.log(totalMortgagePayment(240000, 5));
+months.splice(monthNumber, 0, month);
+console.log(months);

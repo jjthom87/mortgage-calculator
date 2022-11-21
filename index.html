@@ -15,14 +15,38 @@
           <input type="number" step="0.01" id="interestRate"><br>
           <label for="extraPayment">Extra Payment</label><br>
           <input type="checkbox" id="extraPayment"><br>
+          <select id="month-select" disabled>
+            <option value="" disabled selected hidden>Month of Extra Payment</option>
+            <option value="January">January</option>
+            <option value="February">February</option>
+            <option value="March">March</option>
+            <option value="April">April</option>
+            <option value="May">May</option>
+            <option value="June">June</option>
+            <option value="July">July</option>
+            <option value="August">August</option>
+            <option value="September">September</option>
+            <option value="October">October</option>
+            <option value="November">November</option>
+            <option value="December">December</option>
+          </select><br>
           <input type="submit"value="Calculate">
         </form>
       </div>
       <div class="payment-div"></div>
+      <div class="totals"></div>
       <div class="table-div"></div>
     </div>
   </body>
   <script type="text/javascript">
+    document.querySelector("#extraPayment").addEventListener('change', (event) => {
+      if (event.currentTarget.checked) {
+        document.querySelector("#month-select").disabled = false;
+      } else {
+        document.querySelector("#month-select").disabled = true;
+      }
+    })
+
     const totalMortgagePayment = (loanAmount, interestRate) => {
         let lengthOfMortgageInYears = 30;
         let yearlyPayments = 12;
@@ -44,24 +68,116 @@
 
       let principalBalance = loanAmount
       let paymentNumber = 0;
-      let months = 360;
+      let monthlyPayments = 0;
+      let totalMonths = 0;
+      let paymentMonth = {};
+      let extraPaymentNumber = 0;
       let tableHTML = "";
+      let n = 0;
+
+      if(extraPayment){
+        let months = [
+          "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+        ]
+
+        let month;
+        let monthNumber;
+
+        switch(document.querySelector("#month-select").value){
+          case "January":
+            month = "January";
+            monthNumber = 0;
+            break;
+          case "February":
+            month = "February";
+            monthNumber = 1;
+            break;
+          case "March":
+            month = "March";
+            monthNumber = 2;
+            break;
+          case "April":
+            month = "April";
+            monthNumber = 3;
+            break;
+          case "May":
+            month = "May";
+            monthNumber = 4;
+            break;
+          case "June":
+            month = "June";
+            monthNumber = 5;
+            break;
+          case "July":
+            month = "July";
+            monthNumber = 6;
+            break;
+          case "August":
+            month = "August";
+            monthNumber = 7;
+            break;
+          case "September":
+            month = "September";
+            monthNumber = 8;
+            break;
+          case "October":
+            month = "October"
+            monthNumber = 9;
+            break;
+          case "November":
+            month = "November";
+            monthNumber = 10;
+            break;
+          case "December":
+            month = "December";
+            monthNumber = 11;
+            break;
+        }
+
+        months.splice(monthNumber, 0, "Extra");
+
+        for(i = 1; i <= 360; i++){
+          if(n == 13){
+            n = 0;
+          }
+          paymentMonth[i]=months[n];
+          n++;
+        }
+      } else {
+        const months = [
+          "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+        ]
+        for(i = 1; i <= 360; i++){
+          if(n == 12){
+            n = 0;
+          }
+          paymentMonth[i]=months[n];
+          n++;
+        }
+      }
 
       while(principalBalance > 0){
+        paymentNumber++;
         let interest = monthlyPayment - (principalBalance * interestPercentage)/12;
-        months--;
-        if(extraYearlyPayment && months % 12 == 0){
-          principalBalance = principalBalance - interest;
+        if(extraYearlyPayment && paymentMonth[paymentNumber] == "Extra"){
           principalBalance = principalBalance - monthlyPayment;
+
+          let interestPayment = monthlyPayment - interest;
+          let amortization = monthlyPayment - (monthlyPayment - interest);
+          principalBalance = principalBalance < 0 ? 0 : principalBalance;
+          tableHTML += "<tr><td>" + paymentNumber + "</td><td>"+document.querySelector("#month-select").value+"</td><td>" + principalBalance + "</td><td>"+interestPayment+"</td><td>"+amortization+"</td></tr>"
+
         } else {
           principalBalance = principalBalance - interest;
+          let interestPayment = monthlyPayment - interest;
+          let amortization = monthlyPayment - (monthlyPayment - interest);
+          principalBalance = principalBalance < 0 ? 0 : principalBalance;
+          tableHTML += "<tr><td>" + paymentNumber + "</td><td>"+paymentMonth[paymentNumber]+"</td><td>" + principalBalance + "</td><td>"+interestPayment+"</td><td>"+amortization+"</td></tr>"
+          totalMonths++;
         }
-        paymentNumber++;
-        let interestPayment = monthlyPayment - interest;
-        let amortization = monthlyPayment - (monthlyPayment - interest);
-        principalBalance = principalBalance < 0 ? 0 : principalBalance;
-        tableHTML += "<tr><td>" + paymentNumber + "</td><td>" + principalBalance + "</td><td>"+interestPayment+"</td><td>"+amortization+"</td></tr>"
       }
+
+      document.querySelector('.totals').innerHTML = "<p>Total Months: "+totalMonths+"</p><p>Total Payments: "+paymentNumber+"</p>"
 
       return tableHTML;
     }
@@ -71,12 +187,13 @@
       document.querySelector(".table-div").innerHTML = "";
 
       let tableHTML = "";
-      tableHTML += "<table><tr><th>Payment #</th><th>Principal Balance</th><th>Interest</th><th>Amortization</th><tr>";
+      tableHTML += "<table><tr><th>Payment #</th><th>Payment Month</th><th>Principal Balance</th><th>Interest</th><th>Amortization</th><tr>";
       tableHTML += calculateAmortization(document.querySelector("#loanAmount").value, document.querySelector("#interestRate").value, document.querySelector("#extraPayment").checked)
       tableHTML += "</table>";
 
       document.querySelector(".table-div").innerHTML = tableHTML;
     });
+
     //https://www.fool.com/the-ascent/personal-finance/how-is-loan-amortization-schedule-calculated/
     //https://www.bankrate.com/mortgages/prepaying-your-mortgage/
   </script>
